@@ -115,6 +115,23 @@ func updateDeploymentSpec(
 				Value:    "preemptible-faas-pool",
 			},
 		}
+		deployment.Spec.Template.Spec.Affinity = &corev1.Affinity{
+			NodeAffinity: &corev1.NodeAffinity{
+				RequiredDuringSchedulingIgnoredDuringExecution: &corev1.NodeSelector{
+					NodeSelectorTerms: []corev1.NodeSelectorTerm{
+						corev1.NodeSelectorTerm{
+							MatchExpressions: []corev1.NodeSelectorRequirement{
+								corev1.NodeSelectorRequirement{
+									Key:      "dedicated",
+									Operator: corev1.NodeSelectorOpIn,
+									Values:   []string{"preemptible-faas-pool"},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
 
 		err = UpdateSecrets(request, deployment, existingSecrets)
 		if err != nil {

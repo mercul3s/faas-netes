@@ -263,6 +263,23 @@ func makeDeploymentSpec(request requests.CreateFunctionRequest, existingSecrets 
 					},
 					RestartPolicy: corev1.RestartPolicyAlways,
 					DNSPolicy:     corev1.DNSClusterFirst,
+					Affinity: &apiv1.Affinity{
+						NodeAffinity: &apiv1.NodeAffinity{
+							RequiredDuringSchedulingIgnoredDuringExecution: &apiv1.NodeSelector{
+								NodeSelectorTerms: []apiv1.NodeSelectorTerm{
+									apiv1.NodeSelectorTerm{
+										MatchExpressions: []apiv1.NodeSelectorRequirement{
+											apiv1.NodeSelectorRequirement{
+												Key:      "dedicated",
+												Operator: apiv1.NodeSelectorOpIn,
+												Values:   []string{"preemptible-faas-pool"},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
